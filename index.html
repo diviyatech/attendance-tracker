@@ -3,21 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Attendify | Smart Attendance Dashboard</title>
+
+<title>Attendify Pro | Smart Attendance</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --primary: #6558f5;
-    --primary-dark: #5042d9;
-    --navy: #111936;
-    --background: #f5f6fc;
-    --text: #20294a;
-    --muted: #8a92ad;
-    --green: #13a879;
-    --red: #ed5571;
-    --border: #eceef7;
+    --bg: #f5f4ff;
+    --surface: #ffffff;
+    --text: #242044;
+    --muted: #8581a4;
+    --border: #eae7ff;
+    --primary: #7357ff;
+    --secondary: #a64dff;
+    --pink: #ff5ebc;
+    --cyan: #28c7fa;
+    --green: #13b981;
+    --red: #f05279;
+    --orange: #ffae42;
+    --shadow: 0 12px 35px #5945bb0c;
+}
+
+body.dark {
+    --bg: #111225;
+    --surface: #1c1d35;
+    --text: #f2f0ff;
+    --muted: #aaa8c7;
+    --border: #30304e;
+    --shadow: 0 12px 35px #00000025;
 }
 
 * {
@@ -28,8 +44,9 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: var(--background);
+    background: var(--bg);
     color: var(--text);
+    transition: background .3s, color .3s;
     min-height: 100vh;
 }
 
@@ -39,7 +56,7 @@ button, input, select {
 
 button {
     cursor: pointer;
-    transition: transform .2s, box-shadow .2s, background .2s;
+    transition: .25s ease;
 }
 
 button:hover {
@@ -47,7 +64,7 @@ button:hover {
 }
 
 button:focus-visible, input:focus-visible, select:focus-visible {
-    outline: 3px solid #aaa4ff;
+    outline: 3px solid #ad9cff;
     outline-offset: 2px;
 }
 
@@ -59,97 +76,95 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 /* SIDEBAR */
 
 .sidebar {
-    width: 245px;
-    background: linear-gradient(180deg, #111936, #1b2450);
+    width: 235px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, #20134a, #38216f 60%, #172b60);
     color: white;
-    padding: 28px 18px;
+    padding: 25px 16px;
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
 }
 
 .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 0 10px 38px;
+    gap: 11px;
+    padding: 0 9px 32px;
 }
 
-.brand-icon {
-    width: 45px;
-    height: 45px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #8175ff, #5a47eb);
+.logo {
+    height: 43px;
+    width: 43px;
     display: grid;
     place-items: center;
-    font-size: 24px;
-    box-shadow: 0 7px 25px #6558f555;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff68c5, #8b5cff, #32c9ff);
+    font-size: 23px;
+    box-shadow: 0 0 24px #a86aff65;
 }
 
 .brand h2 {
-    font-size: 18px;
-    letter-spacing: -.5px;
+    font-size: 19px;
+    letter-spacing: -.7px;
 }
 
 .brand span {
-    color: #aaa2ff;
+    color: #d9b6ff;
 }
 
 .nav-title {
-    color: #7883aa;
+    color: #b5a5df;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 2px;
-    padding: 0 12px;
-    margin-bottom: 14px;
+    margin: 12px 10px;
 }
 
 .nav-link {
+    color: #d0c7ed;
+    text-decoration: none;
+    padding: 13px 12px;
+    border-radius: 12px;
+    margin-bottom: 7px;
     display: flex;
     align-items: center;
-    gap: 13px;
-    color: #aeb8d7;
-    text-decoration: none;
-    padding: 14px;
-    margin-bottom: 7px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 500;
+    gap: 12px;
+    font-size: 12px;
+    font-weight: 600;
     transition: .25s;
 }
 
 .nav-link:hover, .nav-link.active {
     color: white;
-    background: linear-gradient(100deg, #6659f5, #5749d7);
-    box-shadow: 0 7px 20px #6558f533;
+    background: linear-gradient(100deg, #8659ff, #bd55df);
+    box-shadow: 0 7px 24px #9e5aff38;
 }
 
 .nav-icon {
-    font-size: 19px;
     width: 22px;
     text-align: center;
+    font-size: 18px;
 }
 
 .sidebar-bottom {
     margin-top: auto;
-    padding: 20px 12px;
+    padding: 17px 13px;
+    border: 1px solid #ffffff20;
     border-radius: 15px;
     background: #ffffff0b;
-    border: 1px solid #ffffff12;
-}
-
-.sidebar-bottom p {
-    color: #aeb8d7;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.8;
+    color: #d2c8f4;
 }
 
-/* MAIN CONTENT */
+/* MAIN */
 
 .main {
     flex: 1;
     min-width: 0;
-    padding: 30px 35px;
+    padding: 28px;
     overflow: hidden;
 }
 
@@ -158,47 +173,43 @@ button:focus-visible, input:focus-visible, select:focus-visible {
     justify-content: space-between;
     align-items: center;
     gap: 15px;
-    margin-bottom: 28px;
-    animation: slideDown .6s ease both;
+    margin-bottom: 25px;
+    animation: slideDown .6s both;
 }
 
 .welcome h1 {
-    font-size: clamp(21px, 2.3vw, 29px);
+    font-size: clamp(21px, 2.4vw, 29px);
     font-weight: 800;
     letter-spacing: -1px;
 }
 
 .welcome p {
     color: var(--muted);
-    font-size: 13px;
+    font-size: 12px;
     margin-top: 8px;
 }
 
 .top-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
-.date-pill {
-    background: white;
+.date-pill, .icon-button {
+    background: var(--surface);
     border: 1px solid var(--border);
-    padding: 12px 15px;
-    border-radius: 12px;
     color: var(--text);
+    border-radius: 12px;
+    padding: 12px;
     font-size: 12px;
-    font-weight: 600;
 }
 
-.avatar {
+.icon-button {
+    font-size: 18px;
     width: 43px;
     height: 43px;
-    background: linear-gradient(135deg, #6558f5, #9d65ed);
-    color: white;
     display: grid;
     place-items: center;
-    border-radius: 50%;
-    font-weight: 700;
 }
 
 /* HERO */
@@ -206,42 +217,42 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .hero {
     position: relative;
     overflow: hidden;
-    border-radius: 22px;
+    border-radius: 23px;
     padding: 32px;
-    background: linear-gradient(110deg, #5449e8, #7663f5 55%, #b56de9);
     color: white;
+    background: linear-gradient(110deg, #6048f5, #9357f4 52%, #ed68c6);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 20px;
-    margin-bottom: 25px;
-    box-shadow: 0 15px 35px #6558f52b;
-    animation: fadeUp .65s .1s both;
+    margin-bottom: 23px;
+    box-shadow: 0 15px 40px #8b5aff35;
+    animation: fadeUp .65s both;
 }
 
 .hero::before, .hero::after {
     content: "";
     position: absolute;
     border-radius: 50%;
-    background: #ffffff0d;
+    background: #ffffff14;
     pointer-events: none;
 }
 
 .hero::before {
-    width: 240px;
-    height: 240px;
-    right: 100px;
-    top: -155px;
+    width: 250px;
+    height: 250px;
+    right: 90px;
+    top: -170px;
 }
 
 .hero::after {
-    width: 170px;
-    height: 170px;
-    right: -55px;
-    bottom: -110px;
+    width: 200px;
+    height: 200px;
+    right: -65px;
+    bottom: -130px;
 }
 
-.hero-content {
+.hero-content, .hero-art {
     position: relative;
     z-index: 1;
 }
@@ -252,49 +263,91 @@ button:focus-visible, input:focus-visible, select:focus-visible {
     background: #ffffff20;
     border: 1px solid #ffffff30;
     border-radius: 8px;
-    font-size: 10px;
+    font-size: 9px;
+    letter-spacing: 1.4px;
     font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 13px;
+    margin-bottom: 14px;
 }
 
 .hero h2 {
-    font-size: clamp(23px, 3vw, 34px);
-    letter-spacing: -1px;
+    font-size: clamp(24px, 3vw, 35px);
+    letter-spacing: -1.2px;
+    line-height: 1.25;
     margin-bottom: 10px;
 }
 
 .hero p {
-    font-size: 13px;
-    color: #e8e5ff;
-    line-height: 1.7;
+    font-size: 12px;
+    color: #f0e9ff;
+    line-height: 1.8;
 }
 
-.hero-emoji {
-    font-size: 72px;
-    position: relative;
-    z-index: 1;
+.hero-art {
+    font-size: 75px;
     animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 10px 15px #30166a33);
 }
 
-/* STATISTICS */
+/* SPARKLES */
+
+.sparkle {
+    position: fixed;
+    z-index: 20;
+    pointer-events: none;
+    color: #ffb9ef;
+    text-shadow: 0 0 8px #ff77dd, 0 0 20px #aa64ff;
+    animation: sparkleFly 1.3s ease-out forwards;
+}
+
+@keyframes sparkleFly {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(.2) rotate(0);
+    }
+    25% { opacity: 1; }
+    100% {
+        opacity: 0;
+        transform: translateY(-55px) scale(1.3) rotate(100deg);
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(17px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 0 #8c64ff00; }
+    50% { box-shadow: 0 0 23px #8c64ff25; }
+}
+
+/* STATS */
 
 .stats {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 18px;
-    margin-bottom: 25px;
+    gap: 16px;
+    margin-bottom: 23px;
 }
 
 .stat-card {
-    background: white;
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 18px;
-    padding: 22px;
-    min-width: 0;
-    box-shadow: 0 5px 20px #27356805;
+    padding: 20px;
+    box-shadow: var(--shadow);
     transition: transform .25s, box-shadow .25s;
-    animation: fadeUp .65s both;
+    animation: fadeUp .7s both;
 }
 
 .stat-card:nth-child(2) { animation-delay: .08s; }
@@ -303,63 +356,67 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 35px #27356810;
+    box-shadow: 0 14px 30px #7655ff1b;
+    animation: glow 1.5s infinite;
 }
 
 .stat-top {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 20px;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 19px;
 }
 
 .stat-icon {
-    width: 43px;
-    height: 43px;
+    width: 42px;
+    height: 42px;
     border-radius: 13px;
     display: grid;
     place-items: center;
     font-size: 21px;
 }
 
-.purple-bg { background: #eeebff; }
-.green-bg { background: #e1f8ef; }
-.red-bg { background: #ffebef; }
-.blue-bg { background: #e5f2ff; }
+.purple-bg { background: #eee8ff; color: #7c4dff; }
+.green-bg { background: #dff9ed; color: #0ca675; }
+.red-bg { background: #ffe7ee; color: #ee4977; }
+.blue-bg { background: #e1f5ff; color: #188eea; }
+.orange-bg { background: #fff0d8; color: #e99518; }
 
 .stat-label {
     color: var(--muted);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .6px;
 }
 
 .stat-value {
     font-size: clamp(24px, 2.5vw, 32px);
     font-weight: 800;
     letter-spacing: -1px;
-    margin-bottom: 9px;
+    margin-bottom: 8px;
 }
 
 .stat-foot {
-    font-size: 11px;
     color: var(--muted);
+    font-size: 10px;
+    line-height: 1.6;
 }
 
-.green-text { color: var(--green); }
-.red-text { color: var(--red); }
-.purple-text { color: var(--primary); }
+.purple-text { color: #8558ed; }
+.green-text { color: #0ca675; }
+.red-text { color: #ee4977; }
 
 /* PANELS */
 
 .panel {
-    background: white;
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 25px;
-    margin-bottom: 23px;
-    box-shadow: 0 5px 20px #27356805;
-    animation: fadeUp .7s .2s both;
+    border-radius: 19px;
+    padding: 23px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow);
+    animation: fadeUp .7s .15s both;
 }
 
 .panel-heading {
@@ -368,101 +425,113 @@ button:focus-visible, input:focus-visible, select:focus-visible {
     align-items: center;
     gap: 15px;
     flex-wrap: wrap;
-    margin-bottom: 23px;
+    margin-bottom: 22px;
 }
 
 .panel-heading h2 {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 800;
     letter-spacing: -.4px;
 }
 
 .panel-heading p {
     color: var(--muted);
-    font-size: 12px;
-    margin-top: 6px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr auto;
-    align-items: end;
-    gap: 14px;
-}
-
-.field label {
-    display: block;
-    color: #6c7595;
     font-size: 11px;
-    font-weight: 700;
-    margin-bottom: 9px;
-}
-
-.field input, .field select, .search-box, .date-input {
-    width: 100%;
-    min-width: 0;
-    padding: 13px 14px;
-    border: 1px solid #e4e7f3;
-    border-radius: 10px;
-    outline: none;
-    background: #fbfcff;
-    color: var(--text);
-    font-size: 12px;
-    transition: border .2s, box-shadow .2s;
-}
-
-.field input:focus, .search-box:focus, .date-input:focus {
-    border-color: #887cff;
-    box-shadow: 0 0 0 3px #6558f515;
+    margin-top: 7px;
 }
 
 .btn {
     border: none;
     border-radius: 10px;
-    padding: 13px 18px;
-    font-size: 12px;
+    padding: 12px 15px;
+    font-size: 11px;
     font-weight: 700;
     display: inline-flex;
-    justify-content: center;
     align-items: center;
-    gap: 7px;
+    justify-content: center;
+    gap: 6px;
     white-space: nowrap;
 }
 
 .btn-primary {
-    background: linear-gradient(110deg, #6558f5, #8a57eb);
+    background: linear-gradient(110deg, #7357ff, #b14de9);
     color: white;
-    box-shadow: 0 5px 15px #6558f52a;
+    box-shadow: 0 5px 16px #8e5bff35;
 }
 
 .btn-primary:hover {
-    box-shadow: 0 9px 23px #6558f54a;
+    box-shadow: 0 8px 25px #8e5bff60;
 }
 
 .btn-light {
-    background: #f0efff;
-    color: var(--primary);
+    background: #eeeaff;
+    color: #7650ec;
 }
 
 .btn-success {
-    background: #e3f8ef;
-    color: #0d9b6c;
+    background: #e0f9ec;
+    color: #0b9e68;
 }
 
 .btn-danger {
-    background: #ffebef;
-    color: #df4562;
+    background: #ffe7ed;
+    color: #e6476e;
+}
+
+.btn-orange {
+    background: #fff0d8;
+    color: #ba7a11;
 }
 
 .btn-remove {
-    background: #f0f2f8;
-    color: #77809c;
+    background: #f0eff8;
+    color: #77728f;
+}
+
+body.dark .btn-light { background: #343052; color: #c9baff; }
+body.dark .btn-success { background: #163f36; color: #65e4b1; }
+body.dark .btn-danger { background: #482537; color: #ff9bb4; }
+body.dark .btn-orange { background: #493822; color: #ffd08a; }
+body.dark .btn-remove { background: #303149; color: #c5c2df; }
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr auto;
+    gap: 13px;
+    align-items: end;
+}
+
+.field label {
+    display: block;
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 800;
+    margin-bottom: 9px;
+    letter-spacing: .5px;
+}
+
+.field input, .search-box, .date-input, .filter-select {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 13px;
+    outline: none;
+    font-size: 11px;
+    transition: .2s;
+}
+
+.field input:focus, .search-box:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px #7357ff18;
 }
 
 .message {
-    margin-top: 13px;
-    font-size: 12px;
-    min-height: 16px;
+    min-height: 15px;
+    margin-top: 12px;
+    font-size: 11px;
 }
 
 /* TABLE */
@@ -470,48 +539,50 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .table-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
 .search-box {
-    width: 210px;
+    width: 220px;
 }
 
 .date-input {
     width: 155px;
 }
 
+.filter-select {
+    width: auto;
+}
+
 .table-wrap {
-    width: 100%;
     overflow-x: auto;
+    width: 100%;
 }
 
 table {
-    border-collapse: collapse;
     width: 100%;
-    min-width: 700px;
-    font-size: 12px;
+    min-width: 770px;
+    border-collapse: collapse;
+    font-size: 11px;
 }
 
 thead {
-    background: #f5f6fc;
+    background: var(--bg);
 }
 
 th {
-    padding: 15px 13px;
-    color: #7e87a5;
+    padding: 15px 12px;
     text-align: left;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: .6px;
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: .7px;
     white-space: nowrap;
 }
 
 td {
-    padding: 14px 13px;
-    border-bottom: 1px solid #f0f1f8;
-    vertical-align: middle;
+    padding: 13px 12px;
+    border-bottom: 1px solid var(--border);
 }
 
 tbody tr {
@@ -520,70 +591,57 @@ tbody tr {
 }
 
 tbody tr:hover {
-    background: #fafaff;
+    background: #9678ff0a;
 }
 
 .roll-badge {
-    display: inline-grid;
-    place-items: center;
-    background: #f0efff;
-    color: var(--primary);
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: 10px;
-    font-weight: 700;
+    background: #eeeaff;
+    color: #7650ec;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
 }
 
 .student-name {
     font-weight: 700;
 }
 
-.student-sub {
-    color: var(--muted);
-    font-size: 10px;
-    margin-top: 4px;
-}
-
 .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 10px;
+    display: inline-block;
     border-radius: 20px;
+    padding: 7px 10px;
     font-size: 10px;
     font-weight: 700;
     white-space: nowrap;
 }
 
-.status-present {
-    background: #e3f8ef;
-    color: #0b9868;
-}
+.status-present { background: #e0f9ec; color: #0b9e68; }
+.status-absent { background: #ffe7ed; color: #e6476e; }
+.status-late { background: #fff0d8; color: #ba7a11; }
+.status-pending { background: #eeeaff; color: #7650ec; }
 
-.status-absent {
-    background: #ffebef;
-    color: #df4562;
-}
-
-.status-pending {
-    background: #fff5df;
-    color: #b78017;
-}
+body.dark .status-present { background: #163f36; color: #65e4b1; }
+body.dark .status-absent { background: #482537; color: #ff9bb4; }
+body.dark .status-late { background: #493822; color: #ffd08a; }
+body.dark .status-pending { background: #343052; color: #c9baff; }
 
 .actions {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     align-items: center;
 }
 
 .actions .btn {
-    padding: 9px 11px;
+    padding: 9px;
     font-size: 10px;
 }
 
 .empty {
     text-align: center;
-    padding: 40px 15px;
+    padding: 35px;
     color: var(--muted);
     line-height: 2;
 }
@@ -593,106 +651,130 @@ tbody tr:hover {
     justify-content: space-between;
     gap: 10px;
     flex-wrap: wrap;
-    margin-top: 18px;
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 16px;
+}
+
+/* REPORTS */
+
+.report-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 18px;
+}
+
+.chart-container {
+    position: relative;
+    height: 260px;
+}
+
+.report-note {
     color: var(--muted);
     font-size: 11px;
+    line-height: 1.8;
+    margin-top: 13px;
+}
+
+.low-list {
+    display: grid;
+    gap: 12px;
+}
+
+.low-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.low-item strong {
+    font-size: 11px;
+}
+
+.low-item small {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 5px;
+}
+
+.low-item .rate {
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 800;
 }
 
 .footer {
     text-align: center;
-    padding: 8px 0 20px;
-    color: #9aa1b9;
-    font-size: 11px;
+    padding: 8px 0 22px;
+    color: var(--muted);
+    font-size: 10px;
 }
 
 .toast {
     position: fixed;
-    bottom: 25px;
-    right: 25px;
-    background: #171f3d;
-    color: white;
-    padding: 15px 20px;
-    border-radius: 12px;
-    font-size: 12px;
-    box-shadow: 0 12px 35px #0002;
+    right: 22px;
+    bottom: 22px;
     z-index: 100;
-    animation: fadeUp .3s both;
-    display: none;
+    padding: 15px 19px;
     max-width: calc(100vw - 40px);
+    background: #292047;
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px #0003;
+    font-size: 12px;
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: .3s;
 }
 
 .toast.show {
-    display: block;
-}
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-12px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-9px); }
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* RESPONSIVE */
 
 @media (max-width: 1100px) {
-    .sidebar { width: 205px; }
-    .main { padding: 25px 22px; }
+    .sidebar { width: 200px; }
+    .main { padding: 22px; }
     .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .form-row { grid-template-columns: 1fr 1fr; }
     .form-row .btn { grid-column: 1 / -1; }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 760px) {
     .app { display: block; }
-    .sidebar {
-        width: 100%;
-        padding: 15px;
-    }
-    .brand { padding: 0 5px 15px; }
-    .sidebar .nav-title, .sidebar-bottom { display: none; }
-    .nav-menu {
-        display: flex;
-        gap: 7px;
-        overflow-x: auto;
-        padding-bottom: 3px;
-    }
-    .nav-link {
-        flex-shrink: 0;
-        padding: 10px 12px;
-        margin: 0;
-        font-size: 11px;
-    }
+    .sidebar { width: 100%; padding: 15px; }
+    .brand { padding: 0 5px 13px; }
+    .nav-title, .sidebar-bottom { display: none; }
+    .nav-menu { display: flex; gap: 5px; overflow-x: auto; }
+    .nav-link { padding: 10px; margin: 0; flex-shrink: 0; font-size: 10px; }
     .nav-icon { font-size: 15px; width: auto; }
-    .main { padding: 20px 14px; }
-    .topbar { align-items: flex-start; }
-    .welcome p { max-width: 210px; line-height: 1.6; }
-    .date-pill { padding: 10px; font-size: 10px; }
-    .avatar { display: none; }
-    .hero { padding: 24px 20px; }
-    .hero-emoji { font-size: 48px; }
-    .hero p { max-width: 270px; }
-    .stats { gap: 11px; }
-    .stat-card { padding: 15px; }
-    .stat-top { margin-bottom: 15px; }
-    .stat-icon { width: 35px; height: 35px; }
-    .stat-label { font-size: 10px; }
-    .stat-foot { line-height: 1.6; }
-    .panel { padding: 17px 13px; }
+    .main { padding: 18px 12px; }
+    .hero { padding: 23px 18px; }
+    .hero-art { font-size: 48px; }
+    .panel { padding: 16px 12px; }
     .form-row { grid-template-columns: 1fr; }
     .form-row .btn { grid-column: auto; }
-    .table-controls { width: 100%; }
+    .report-grid { grid-template-columns: 1fr; }
     .search-box { width: 100%; }
-    .date-input { width: 100%; }
-    .table-controls .btn { flex: 1; }
-    .panel-heading { align-items: flex-start; }
+    .topbar { align-items: flex-start; }
+    .welcome p { max-width: 230px; line-height: 1.6; }
+    .date-pill { display: none; }
+}
+
+@media (max-width: 400px) {
+    .stats { gap: 9px; }
+    .stat-card { padding: 12px; }
+    .stat-label { font-size: 8px; }
+    .stat-icon { width: 34px; height: 34px; }
+    .stat-value { font-size: 23px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -700,7 +782,6 @@ tbody tr:hover {
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: .01ms !important;
-        scroll-behavior: auto !important;
     }
 }
 </style>
@@ -709,171 +790,201 @@ tbody tr:hover {
 <body>
 <div class="app">
 
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-icon">✓</div>
-            <h2>Attend<span>ify.</span></h2>
+<aside class="sidebar">
+    <div class="brand">
+        <div class="logo">✦</div>
+        <h2>Attend<span>ify Pro</span></h2>
+    </div>
+
+    <div class="nav-title">MAIN MENU</div>
+
+    <nav class="nav-menu">
+        <a href="#dashboard" class="nav-link active"><span class="nav-icon">⌂</span> Dashboard</a>
+        <a href="#students" class="nav-link"><span class="nav-icon">♙</span> Students</a>
+        <a href="#attendance" class="nav-link"><span class="nav-icon">☑</span> Attendance</a>
+        <a href="#reports" class="nav-link"><span class="nav-icon">▥</span> Analytics & Reports</a>
+    </nav>
+
+    <div class="nav-title">PREFERENCES</div>
+    <a href="#settings" class="nav-link"><span class="nav-icon">⚙</span> Settings</a>
+
+    <div class="sidebar-bottom">
+        ✨ Make every day count.<br>
+        <strong>Better attendance, brighter futures.</strong>
+    </div>
+</aside>
+
+<main class="main" id="dashboard">
+
+<header class="topbar">
+    <div class="welcome">
+        <h1>Hello, Teacher! ✨</h1>
+        <p>Your classroom at a glance. Let's make today productive!</p>
+    </div>
+    <div class="top-actions">
+        <div class="date-pill" id="todayLabel">📅 Today</div>
+        <button class="icon-button" id="themeBtn" aria-label="Toggle dark mode">🌙</button>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-tag">✦ SMART CLASSROOM MANAGEMENT</div>
+        <h2>Track Smarter.<br>Shine Brighter. ✨</h2>
+        <p>Your all-in-one space to manage students,<br>
+           monitor attendance, and celebrate progress.</p>
+    </div>
+    <div class="hero-art">🎓</div>
+</section>
+
+<section class="stats">
+    <article class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon blue-bg">♙</div>
+            <span class="stat-label">STUDENTS</span>
+        </div>
+        <div class="stat-value" id="totalCount">0</div>
+        <div class="stat-foot">Total registered students</div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon green-bg">✓</div>
+            <span class="stat-label">PRESENT</span>
+        </div>
+        <div class="stat-value green-text" id="presentCount">0</div>
+        <div class="stat-foot">Present on selected date</div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon red-bg">✕</div>
+            <span class="stat-label">ABSENT</span>
+        </div>
+        <div class="stat-value red-text" id="absentCount">0</div>
+        <div class="stat-foot">Absent on selected date</div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon purple-bg">◔</div>
+            <span class="stat-label">ATTENDANCE RATE</span>
+        </div>
+        <div class="stat-value purple-text" id="rateCount">0%</div>
+        <div class="stat-foot">Of marked attendance</div>
+    </article>
+</section>
+
+<section class="panel" id="students">
+    <div class="panel-heading">
+        <div>
+            <h2>＋ Student Management</h2>
+            <p>Add students to your classroom with their unique roll numbers.</p>
+        </div>
+    </div>
+
+    <form id="studentForm" class="form-row">
+        <div class="field">
+            <label for="rollInput">ROLL NUMBER</label>
+            <input id="rollInput" placeholder="e.g. 101" maxlength="30" required>
+        </div>
+        <div class="field">
+            <label for="nameInput">STUDENT NAME</label>
+            <input id="nameInput" placeholder="Enter student name" maxlength="100" required>
+        </div>
+        <button class="btn btn-primary" type="submit">✦ Add Student</button>
+    </form>
+    <p class="message" id="formMessage" role="status"></p>
+</section>
+
+<section class="panel" id="attendance">
+    <div class="panel-heading">
+        <div>
+            <h2>☑ Daily Attendance</h2>
+            <p>Mark and update student attendance for any date.</p>
+        </div>
+        <input type="date" class="date-input" id="dateInput" aria-label="Attendance date">
+    </div>
+
+    <div class="table-controls" style="margin-bottom:18px">
+        <input type="search" class="search-box" id="searchInput" placeholder="⌕ Search students..." aria-label="Search students">
+        <select id="statusFilter" class="filter-select" aria-label="Filter by attendance status">
+            <option value="All">All statuses</option>
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+            <option value="Late">Late</option>
+            <option value="Not Marked">Not Marked</option>
+        </select>
+        <button class="btn btn-light" id="exportBtn" type="button">↓ Export CSV</button>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ROLL NO.</th>
+                    <th>STUDENT NAME</th>
+                    <th>STATUS</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody id="studentTable"></tbody>
+        </table>
+    </div>
+
+    <div class="table-footer">
+        <span id="tableSummary">No students registered</span>
+        <span>💾 Saved in this browser</span>
+    </div>
+</section>
+
+<section class="panel" id="reports">
+    <div class="panel-heading">
+        <div>
+            <h2>📊 Analytics & Reports</h2>
+            <p>Explore attendance distribution and identify students who may need support.</p>
+        </div>
+    </div>
+
+    <div class="report-grid">
+        <div>
+            <h3 style="font-size:13px;margin-bottom:18px">Attendance Distribution</h3>
+            <div class="chart-container">
+                <canvas id="attendanceChart" aria-label="Attendance distribution chart"></canvas>
+            </div>
+            <p class="report-note">This chart displays attendance status for the selected date.</p>
         </div>
 
-        <div class="nav-title">WORKSPACE</div>
-
-        <nav class="nav-menu">
-            <a href="#dashboard" class="nav-link active">
-                <span class="nav-icon">⌂</span> Dashboard
-            </a>
-            <a href="#students" class="nav-link">
-                <span class="nav-icon">♙</span> Students
-            </a>
-            <a href="#attendance" class="nav-link">
-                <span class="nav-icon">☑</span> Attendance
-            </a>
-        </nav>
-
-        <div class="sidebar-bottom">
-            <p>🌱 Small steps every day create a brighter future.</p>
+        <div>
+            <h3 style="font-size:13px;margin-bottom:18px">Students Below 75% Attendance</h3>
+            <div id="lowAttendance" class="low-list"></div>
+            <p class="report-note">Percentages are based on dates where attendance has been marked for each student.</p>
         </div>
-    </aside>
+    </div>
+</section>
 
-    <main class="main" id="dashboard">
+<section class="panel" id="settings">
+    <div class="panel-heading">
+        <div>
+            <h2>⚙ Preferences & Settings</h2>
+            <p>Personalise your attendance dashboard.</p>
+        </div>
+    </div>
 
-        <header class="topbar">
-            <div class="welcome">
-                <h1>Hello, Teacher! 👋</h1>
-                <p>Here's what's happening with your students today.</p>
-            </div>
+    <div class="table-controls">
+        <button class="btn btn-light" id="sparkleBtn" type="button">✨ Sparkle Effect</button>
+        <button class="btn btn-light" id="resetDayBtn" type="button">↻ Reset Selected Date</button>
+        <button class="btn btn-danger" id="clearBtn" type="button">Clear All Data</button>
+    </div>
+    <p class="report-note">Reset Selected Date removes attendance for the chosen date. Clear All Data removes every student and all attendance records stored by this app in this browser.</p>
+</section>
 
-            <div class="top-actions">
-                <div class="date-pill" id="todayLabel">📅 Today</div>
-                <div class="avatar">T</div>
-            </div>
-        </header>
+<footer class="footer">
+    Made with 💜 and a little sparkle ✨ | Attendify Pro
+</footer>
 
-        <section class="hero">
-            <div class="hero-content">
-                <div class="hero-tag">SMART ATTENDANCE MANAGEMENT</div>
-                <h2>Track Smarter.<br>Achieve More.</h2>
-                <p>Manage your classroom attendance with clarity,<br>
-                   simplicity, and confidence.</p>
-            </div>
-            <div class="hero-emoji">📚</div>
-        </section>
-
-        <section class="stats">
-            <article class="stat-card">
-                <div class="stat-top">
-                    <div class="stat-icon blue-bg">♙</div>
-                    <span class="stat-label">ALL STUDENTS</span>
-                </div>
-                <div class="stat-value" id="totalCount">0</div>
-                <div class="stat-foot">Registered students</div>
-            </article>
-
-            <article class="stat-card">
-                <div class="stat-top">
-                    <div class="stat-icon green-bg">✓</div>
-                    <span class="stat-label">PRESENT</span>
-                </div>
-                <div class="stat-value green-text" id="presentCount">0</div>
-                <div class="stat-foot" id="presentFoot">Present on selected date</div>
-            </article>
-
-            <article class="stat-card">
-                <div class="stat-top">
-                    <div class="stat-icon red-bg">✕</div>
-                    <span class="stat-label">ABSENT</span>
-                </div>
-                <div class="stat-value red-text" id="absentCount">0</div>
-                <div class="stat-foot" id="absentFoot">Absent on selected date</div>
-            </article>
-
-            <article class="stat-card">
-                <div class="stat-top">
-                    <div class="stat-icon purple-bg">◔</div>
-                    <span class="stat-label">ATTENDANCE RATE</span>
-                </div>
-                <div class="stat-value purple-text" id="rateCount">0%</div>
-                <div class="stat-foot">Of marked attendance</div>
-            </article>
-        </section>
-
-        <section class="panel" id="students">
-            <div class="panel-heading">
-                <div>
-                    <h2>＋ Add New Student</h2>
-                    <p>Register a student to your attendance list.</p>
-                </div>
-            </div>
-
-            <form id="studentForm" class="form-row">
-                <div class="field">
-                    <label for="rollInput">ROLL NUMBER</label>
-                    <input id="rollInput" type="text"
-                           placeholder="e.g. 101" maxlength="30" required>
-                </div>
-
-                <div class="field">
-                    <label for="nameInput">STUDENT NAME</label>
-                    <input id="nameInput" type="text"
-                           placeholder="Enter full name" maxlength="100" required>
-                </div>
-
-                <button class="btn btn-primary" type="submit">
-                    ＋ Add Student
-                </button>
-            </form>
-            <p class="message" id="formMessage" role="status"></p>
-        </section>
-
-        <section class="panel" id="attendance">
-            <div class="panel-heading">
-                <div>
-                    <h2>Attendance Overview</h2>
-                    <p>Manage and update daily attendance records.</p>
-                </div>
-
-                <div class="table-controls">
-                    <input type="date" class="date-input" id="dateInput"
-                           aria-label="Attendance date">
-                    <button class="btn btn-light" id="historyBtn" type="button">
-                        ↻ View Date
-                    </button>
-                </div>
-            </div>
-
-            <div class="table-controls" style="margin-bottom:18px">
-                <input type="search" class="search-box" id="searchInput"
-                       placeholder="⌕  Search students..."
-                       aria-label="Search students">
-                <button class="btn btn-light" id="exportBtn" type="button">
-                    ↓ Export CSV
-                </button>
-            </div>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>ROLL NO.</th>
-                            <th>STUDENT</th>
-                            <th>STATUS</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTable"></tbody>
-                </table>
-            </div>
-
-            <div class="table-footer">
-                <span id="tableSummary">No students registered</span>
-                <span>Changes are saved in this browser</span>
-            </div>
-        </section>
-
-        <footer class="footer">
-            Made with ♥ for a smarter learning experience · Attendify
-        </footer>
-    </main>
+</main>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -881,14 +992,17 @@ tbody tr:hover {
 <script>
 "use strict";
 
-const STUDENTS_KEY = "attendify_students_v1";
-const RECORDS_KEY = "attendify_records_v1";
+const STUDENTS_KEY = "attendify_pro_students_v1";
+const RECORDS_KEY = "attendify_pro_records_v1";
+const THEME_KEY = "attendify_pro_theme_v1";
+
+const $ = id => document.getElementById(id);
 
 function loadJSON(key, fallback) {
     try {
         const value = localStorage.getItem(key);
         return value ? JSON.parse(value) : fallback;
-    } catch (error) {
+    } catch {
         return fallback;
     }
 }
@@ -897,66 +1011,125 @@ let students = loadJSON(STUDENTS_KEY, []);
 let records = loadJSON(RECORDS_KEY, {});
 
 if (!Array.isArray(students)) students = [];
-if (!records || typeof records !== "object" || Array.isArray(records)) {
-    records = {};
-}
+if (!records || typeof records !== "object" || Array.isArray(records)) records = {};
 
-const $ = id => document.getElementById(id);
-
-const dateInput = $("dateInput");
-const studentTable = $("studentTable");
+let chart = null;
+let toastTimer;
 
 function localDateString() {
     const now = new Date();
-    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-    return local.toISOString().slice(0, 10);
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        .toISOString().slice(0, 10);
 }
 
-dateInput.value = localDateString();
-
-function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-    })[char]);
-}
+$("dateInput").value = localDateString();
 
 function saveData() {
     try {
         localStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
         localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
         return true;
-    } catch (error) {
-        showToast("Unable to save data. Browser storage may be full.");
+    } catch {
+        showToast("Could not save data. Browser storage may be full.");
         return false;
     }
 }
-
-let toastTimer;
 
 function showToast(message) {
     const toast = $("toast");
     toast.textContent = message;
     toast.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 2700);
 }
 
-function getDayRecords() {
-    return records[dateInput.value] || {};
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, ch => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;",
+        '"': "&quot;", "'": "&#039;"
+    })[ch]);
 }
 
-function getStatus(student) {
-    return getDayRecords()[student.roll] || "Not Marked";
+function dayRecords() {
+    return records[$("dateInput").value] || {};
 }
 
-function updateDashboard() {
-    const present = students.filter(s => getStatus(s) === "Present").length;
-    const absent = students.filter(s => getStatus(s) === "Absent").length;
-    const marked = present + absent;
+function statusOf(student) {
+    return dayRecords()[student.roll] || "Not Marked";
+}
+
+function studentAttendance(roll) {
+    let present = 0;
+    let total = 0;
+
+    Object.values(records).forEach(day => {
+        if (day && ["Present", "Absent", "Late"].includes(day[roll])) {
+            total++;
+            if (day[roll] === "Present") present++;
+        }
+    });
+
+    return {
+        present,
+        total,
+        rate: total ? Math.round(present / total * 100) : null
+    };
+}
+
+function updateChart(present, absent, late, pending) {
+    if (typeof Chart === "undefined") return;
+
+    const canvas = $("attendanceChart");
+    if (!canvas) return;
+
+    const dark = document.body.classList.contains("dark");
+    const textColor = dark ? "#e5e0ff" : "#77728f";
+
+    if (chart) {
+        chart.data.datasets[0].data = [present, absent, late, pending];
+        chart.options.plugins.legend.labels.color = textColor;
+        chart.update();
+        return;
+    }
+
+    chart = new Chart(canvas, {
+        type: "doughnut",
+        data: {
+            labels: ["Present", "Absent", "Late", "Not Marked"],
+            datasets: [{
+                data: [present, absent, late, pending],
+                backgroundColor: ["#13b981", "#f05279", "#ffae42", "#a89aff"],
+                borderWidth: 0,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "70%",
+            plugins: {
+                legend: {
+                    position: "bottom",
+                    labels: {
+                        color: textColor,
+                        usePointStyle: true,
+                        padding: 18,
+                        font: { family: "Inter", size: 10 }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function render() {
+    const day = dayRecords();
+
+    const present = students.filter(s => day[s.roll] === "Present").length;
+    const absent = students.filter(s => day[s.roll] === "Absent").length;
+    const late = students.filter(s => day[s.roll] === "Late").length;
+    const pending = students.length - present - absent - late;
+    const marked = present + absent + late;
 
     $("totalCount").textContent = students.length;
     $("presentCount").textContent = present;
@@ -964,93 +1137,109 @@ function updateDashboard() {
     $("rateCount").textContent =
         (marked ? Math.round(present / marked * 100) : 0) + "%";
 
-    $("presentFoot").textContent =
-        marked ? Math.round(present / marked * 100) + "% of marked students" :
-        "No attendance marked yet";
-
-    $("absentFoot").textContent =
-        marked ? Math.round(absent / marked * 100) + "% of marked students" :
-        "No attendance marked yet";
-
-    $("todayLabel").textContent =
-        "📅 " + new Date(dateInput.value + "T12:00:00")
+    $("todayLabel").textContent = "📅 " +
+        new Date($("dateInput").value + "T12:00:00")
             .toLocaleDateString("en-IN", {
                 day: "2-digit", month: "short", year: "numeric"
             });
-}
-
-function render() {
-    updateDashboard();
 
     const query = $("searchInput").value.trim().toLowerCase();
+    const filter = $("statusFilter").value;
 
-    const filtered = students.filter(student =>
-        student.name.toLowerCase().includes(query) ||
-        student.roll.toLowerCase().includes(query)
-    );
+    const filtered = students.filter(student => {
+        const matchesSearch =
+            student.name.toLowerCase().includes(query) ||
+            student.roll.toLowerCase().includes(query);
 
-    studentTable.replaceChildren();
+        return matchesSearch &&
+            (filter === "All" || statusOf(student) === filter);
+    });
 
-    if (filtered.length === 0) {
+    const tbody = $("studentTable");
+    tbody.replaceChildren();
+
+    if (!filtered.length) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
         cell.colSpan = 5;
         cell.className = "empty";
         cell.textContent = students.length
-            ? "🔍 No matching students found."
-            : "📚 No students yet. Add your first student above!";
+            ? "🔍 No students match your search or filter."
+            : "🎓 No students yet. Add your first student above!";
         row.appendChild(cell);
-        studentTable.appendChild(row);
+        tbody.appendChild(row);
     } else {
         filtered.forEach((student, index) => {
-            const status = getStatus(student);
-            const row = document.createElement("tr");
+            const status = statusOf(student);
+            const cls = status === "Present" ? "status-present"
+                : status === "Absent" ? "status-absent"
+                : status === "Late" ? "status-late" : "status-pending";
 
-            const statusClass = status === "Present"
-                ? "status-present"
-                : status === "Absent" ? "status-absent" : "status-pending";
+            const row = document.createElement("tr");
 
             row.innerHTML = `
                 <td><span class="roll-badge">${index + 1}</span></td>
                 <td>${escapeHTML(student.roll)}</td>
-                <td>
-                    <div class="student-name">${escapeHTML(student.name)}</div>
-                    <div class="student-sub">Student</div>
-                </td>
-                <td>
-                    <span class="status ${statusClass}">
-                        ${status === "Present" ? "●" :
-                          status === "Absent" ? "●" : "○"}
-                        ${status}
-                    </span>
-                </td>
+                <td><strong>${escapeHTML(student.name)}</strong></td>
+                <td><span class="status ${cls}">${escapeHTML(status)}</span></td>
                 <td>
                     <div class="actions">
-                        <button class="btn btn-success" data-action="Present"
-                                data-roll="${escapeHTML(student.roll)}"
-                                aria-label="Mark ${escapeHTML(student.name)} present">
-                            ✓ Present
-                        </button>
-                        <button class="btn btn-danger" data-action="Absent"
-                                data-roll="${escapeHTML(student.roll)}"
-                                aria-label="Mark ${escapeHTML(student.name)} absent">
-                            ✕ Absent
-                        </button>
-                        <button class="btn btn-remove" data-action="Remove"
-                                data-roll="${escapeHTML(student.roll)}"
-                                aria-label="Remove ${escapeHTML(student.name)}">
-                            ✕
-                        </button>
+                        <button class="btn btn-success" data-action="Present" data-roll="${escapeHTML(student.roll)}">✓</button>
+                        <button class="btn btn-danger" data-action="Absent" data-roll="${escapeHTML(student.roll)}">✕</button>
+                        <button class="btn btn-orange" data-action="Late" data-roll="${escapeHTML(student.roll)}">◷</button>
+                        <button class="btn btn-remove" data-action="Edit" data-roll="${escapeHTML(student.roll)}">✎</button>
+                        <button class="btn btn-remove" data-action="Remove" data-roll="${escapeHTML(student.roll)}">🗑</button>
                     </div>
                 </td>
             `;
 
-            studentTable.appendChild(row);
+            tbody.appendChild(row);
         });
     }
 
     $("tableSummary").textContent =
         `Showing ${filtered.length} of ${students.length} students`;
+
+    const low = $("lowAttendance");
+    low.replaceChildren();
+
+    const lowStudents = students
+        .map(s => ({ ...s, attendance: studentAttendance(s.roll) }))
+        .filter(s => s.attendance.rate !== null && s.attendance.rate < 75)
+        .sort((a, b) => a.attendance.rate - b.attendance.rate);
+
+    if (!lowStudents.length) {
+        const note = document.createElement("div");
+        note.className = "empty";
+        note.textContent = students.length
+            ? "🎉 No students currently fall below 75% based on recorded attendance."
+            : "Add students and record attendance to see reports.";
+        low.appendChild(note);
+    } else {
+        lowStudents.forEach(student => {
+            const item = document.createElement("div");
+            item.className = "low-item";
+
+            const info = document.createElement("div");
+            const name = document.createElement("strong");
+            name.textContent = student.name;
+
+            const detail = document.createElement("small");
+            detail.textContent =
+                `${student.roll} · ${student.attendance.present}/${student.attendance.total} present`;
+
+            info.append(name, detail);
+
+            const rate = document.createElement("span");
+            rate.className = "rate";
+            rate.textContent = student.attendance.rate + "%";
+
+            item.append(info, rate);
+            low.appendChild(item);
+        });
+    }
+
+    updateChart(present, absent, late, pending);
 }
 
 $("studentForm").addEventListener("submit", event => {
@@ -1062,42 +1251,57 @@ $("studentForm").addEventListener("submit", event => {
     if (!roll || !name) return;
 
     if (students.some(s => s.roll.toLowerCase() === roll.toLowerCase())) {
-        $("formMessage").textContent =
-            "This roll number already exists. Please use a unique number.";
-        $("formMessage").className = "message red-text";
+        $("formMessage").textContent = "That roll number already exists.";
+        $("formMessage").style.color = "var(--red)";
         return;
     }
 
     students.push({ roll, name });
-
     saveData();
     $("studentForm").reset();
-    $("formMessage").textContent = "Student added successfully!";
-    $("formMessage").className = "message green-text";
+    $("formMessage").textContent = "Student added successfully! ✨";
+    $("formMessage").style.color = "var(--green)";
 
     render();
-    showToast("✓ Student added successfully!");
+    showToast("✨ Student added successfully!");
+    sparkleBurst();
 });
 
-studentTable.addEventListener("click", event => {
+$("studentTable").addEventListener("click", event => {
     const button = event.target.closest("button[data-action]");
     if (!button) return;
 
     const roll = button.dataset.roll;
     const action = button.dataset.action;
+    const student = students.find(s => s.roll === roll);
+
+    if (!student) return;
+
+    if (action === "Edit") {
+        const newName = prompt("Edit student name:", student.name);
+        if (newName === null) return;
+
+        const cleanName = newName.trim();
+        if (!cleanName) {
+            showToast("Student name cannot be empty.");
+            return;
+        }
+
+        student.name = cleanName;
+        saveData();
+        render();
+        showToast("Student details updated.");
+        return;
+    }
 
     if (action === "Remove") {
-        const student = students.find(s => s.roll === roll);
-        if (!student) return;
-
-        if (!confirm(`Remove ${student.name} and their attendance records?`)) {
+        if (!confirm(`Remove ${student.name} and all their attendance records?`)) {
             return;
         }
 
         students = students.filter(s => s.roll !== roll);
-
-        Object.keys(records).forEach(date => {
-            if (records[date]) delete records[date][roll];
+        Object.values(records).forEach(day => {
+            if (day) delete day[roll];
         });
 
         saveData();
@@ -1106,51 +1310,53 @@ studentTable.addEventListener("click", event => {
         return;
     }
 
-    if (action !== "Present" && action !== "Absent") return;
-    if (!dateInput.value) {
-        showToast("Please select an attendance date.");
+    if (!["Present", "Absent", "Late"].includes(action)) return;
+
+    const date = $("dateInput").value;
+    if (!date) {
+        showToast("Please choose a date first.");
         return;
     }
 
-    if (!records[dateInput.value]) records[dateInput.value] = {};
-    records[dateInput.value][roll] = action;
+    if (!records[date]) records[date] = {};
+    records[date][roll] = action;
 
     saveData();
     render();
-    showToast(`Attendance marked: ${action}`);
+    showToast(`Attendance marked: ${action} ✨`);
 });
 
 $("searchInput").addEventListener("input", render);
-
-dateInput.addEventListener("change", () => {
+$("statusFilter").addEventListener("change", render);
+$("dateInput").addEventListener("change", () => {
     render();
-    showToast("Attendance date updated.");
-});
-
-$("historyBtn").addEventListener("click", () => {
-    render();
-    showToast("Showing records for the selected date.");
+    showToast("Attendance date changed.");
 });
 
 $("exportBtn").addEventListener("click", () => {
-    const date = dateInput.value;
     const rows = [
-        ["Date", "Roll Number", "Student Name", "Attendance Status"]
+        ["Date", "Roll Number", "Student Name", "Selected Date Status", "Overall Attendance %"]
     ];
 
     students.forEach(student => {
+        const attendance = studentAttendance(student.roll);
+
         rows.push([
-            date,
+            $("dateInput").value,
             student.roll,
             student.name,
-            getStatus(student)
+            statusOf(student),
+            attendance.rate === null ? "No records" : attendance.rate + "%"
         ]);
     });
 
     const csv = rows.map(row =>
-        row.map(value =>
-            '"' + String(value).replace(/"/g, '""') + '"'
-        ).join(",")
+        row.map(value => {
+            let text = String(value);
+            // Reduce the risk of spreadsheet formula injection.
+            if (/^[=+\-@\t\r]/.test(text)) text = "'" + text;
+            return '"' + text.replace(/"/g, '""') + '"';
+        }).join(",")
     ).join("\r\n");
 
     const blob = new Blob(["\uFEFF" + csv], {
@@ -1159,15 +1365,73 @@ $("exportBtn").addEventListener("click", () => {
 
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-
     link.href = url;
-    link.download = `attendance-${date}.csv`;
-    document.body.appendChild(link);
+    link.download = `attendify-report-${$("dateInput").value}.csv`;
     link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
 
-    showToast("Attendance CSV downloaded!");
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast("📥 CSV report downloaded!");
+});
+
+function sparkleBurst() {
+    const symbols = ["✦", "✧", "✦", "✺", "✨", "⋆"];
+
+    for (let i = 0; i < 22; i++) {
+        const sparkle = document.createElement("span");
+        sparkle.className = "sparkle";
+        sparkle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        sparkle.style.left = Math.random() * 100 + "vw";
+        sparkle.style.top = (35 + Math.random() * 55) + "vh";
+        sparkle.style.fontSize = (12 + Math.random() * 20) + "px";
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 1400);
+    }
+}
+
+$("sparkleBtn").addEventListener("click", () => {
+    sparkleBurst();
+    showToast("✨ Let your dashboard sparkle!");
+});
+
+$("themeBtn").addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    const isDark = document.body.classList.contains("dark");
+    $("themeBtn").textContent = isDark ? "☀️" : "🌙";
+
+    try {
+        localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
+    } catch {}
+
+    if (chart) {
+        chart.options.plugins.legend.labels.color = isDark ? "#e5e0ff" : "#77728f";
+        chart.update();
+    }
+});
+
+$("resetDayBtn").addEventListener("click", () => {
+    const date = $("dateInput").value;
+
+    if (!confirm(`Clear all attendance for ${date}? Student details will remain.`)) {
+        return;
+    }
+
+    delete records[date];
+    saveData();
+    render();
+    showToast("Attendance for selected date was reset.");
+});
+
+$("clearBtn").addEventListener("click", () => {
+    if (!confirm("Delete ALL students and ALL attendance records from this browser? This cannot be undone.")) {
+        return;
+    }
+
+    students = [];
+    records = {};
+    saveData();
+    render();
+    showToast("All app data cleared.");
 });
 
 document.querySelectorAll(".nav-link").forEach(link => {
@@ -1179,8 +1443,31 @@ document.querySelectorAll(".nav-link").forEach(link => {
     });
 });
 
+try {
+    if (localStorage.getItem(THEME_KEY) === "dark") {
+        document.body.classList.add("dark");
+        $("themeBtn").textContent = "☀️";
+    }
+} catch {}
+
 render();
+
+// Small occasional sparkle decorations.
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    setInterval(() => {
+        if (Math.random() > 0.55) {
+            const sparkle = document.createElement("span");
+            sparkle.className = "sparkle";
+            sparkle.textContent = "✦";
+            sparkle.style.left = Math.random() * 100 + "vw";
+            sparkle.style.top = Math.random() * 100 + "vh";
+            sparkle.style.fontSize = (10 + Math.random() * 12) + "px";
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 1400);
+        }
+    }, 1800);
+}
 </script>
 </body>
 </html>
-        
+   
