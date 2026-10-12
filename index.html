@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        header {
+            background: #4338ca;
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px #00000010;
+        }
+
+        .card h3 {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0 0;
+        }
+
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        input, button {
+            padding: 11px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            margin: 5px 3px;
+            font-size: 14px;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            color: white;
+            background: #4338ca;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .present {
+            background: #16a34a;
+        }
+
+        .absent {
+            background: #dc2626;
+        }
+
+        .remove {
+            background: #64748b;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 13px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        th {
+            background: #eef2ff;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 18px 10px;
+            }
+
+            .panel {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <h1>📚 Attendance Tracker</h1>
+        <p>Student Attendance Management System</p>
+    </header>
+
+    <section class="cards">
+        <div class="card">
+            <h3>Total Students</h3>
+            <p id="total">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Present Today</h3>
+            <p id="presentCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Absent Today</h3>
+            <p id="absentCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Attendance</h3>
+            <p id="percentage">0%</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Add Student</h2>
+
+        <input type="text" id="roll" placeholder="Roll Number">
+        <input type="text" id="name" placeholder="Student Name">
+        <button onclick="addStudent()">Add Student</button>
+
+        <p id="message" role="status"></p>
+    </section>
+
+    <section class="panel">
+        <h2>Mark Attendance</h2>
+
+        <label for="date">Select Date:</label>
+        <input type="date" id="date">
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Roll No.</th>
+                        <th>Student Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    const STORAGE_KEY = "attendanceTrackerStudents";
+    const RECORD_KEY = "attendanceTrackerRecords";
+
+    let students = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    let records = JSON.parse(localStorage.getItem(RECORD_KEY) || "{}");
+
+    const dateInput = document.getElementById("date");
+
+    function todayString() {
+        const now = new Date();
+        const localDate = new Date(
+            now.getTime() - now.getTimezoneOffset() * 60000
+        );
+        return localDate.toISOString().slice(0, 10);
+    }
+
+    dateInput.value = todayString();
+
+    function saveData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+        localStorage.setItem(RECORD_KEY, JSON.stringify(records));
+    }
+
+    function addStudent() {
+        const roll = document.getElementById("roll").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const message = document.getElementById("message");
+
+        if (!roll || !name) {
+            message.textContent = "Please enter both roll number and name.";
+            return;
+        }
+
+        if (students.some(s => s.roll.toLowerCase() === roll.toLowerCase())) {
+            message.textContent = "This roll number already exists.";
+            return;
+        }
+
+        students.push({ roll, name });
+
+        document.getElementById("roll").value = "";
+        document.getElementById("name").value = "";
+
+        message.textContent = "Student added successfully!";
+        saveData();
+        render();
+    }
+
+    function markAttendance(roll, status) {
+        const date = dateInput.value;
+
+        if (!date) {
+            alert("Please select a date.");
+            return;
+        }
+
+        if (!records[date]) records[date] = {};
+        records[date][roll] = status;
+
+        saveData();
+        render();
+    }
+
+    function removeStudent(roll) {
+        if (!confirm("Remove this student and their attendance records?")) {
+            return;
+        }
+
+        students = students.filter(s => s.roll !== roll);
+
+        Object.keys(records).forEach(date => {
+            delete records[date][roll];
+        });
+
+        saveData();
+        render();
+    }
+
+    function render() {
+        const date = dateInput.value;
+        const todayRecords = records[date] || {};
+
+        document.getElementById("total").textContent = students.length;
+
+        const present = students.filter(
+            s => todayRecords[s.roll] === "Present"
+        ).length;
+
+        const absent = students.filter(
+            s => todayRecords[s.roll] === "Absent"
+        ).length;
+
+        document.getElementById("presentCount").textContent = present;
+        document.getElementById("absentCount").textContent = absent;
+
+        const marked = present + absent;
+
+        document.getElementById("percentage").textContent =
+            marked ? Math.round((present / marked) * 100) + "%" : "0%";
+
+        const table = document.getElementById("studentTable");
+        table.innerHTML = "";
+
+        students.forEach(student => {
+            const status = todayRecords[student.roll] || "Not Marked";
+            const row = document.createElement("tr");
+
+            [student.roll, student.name, status].forEach(value => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                if (value === status) cell.className = "status";
+                row.appendChild(cell);
+            });
+
+            const actions = document.createElement("td");
+
+            const presentButton = document.createElement("button");
+            presentButton.textContent = "Present";
+            presentButton.className = "present";
+            presentButton.onclick = () =>
+                markAttendance(student.roll, "Present");
+
+            const absentButton = document.createElement("button");
+            absentButton.textContent = "Absent";
+            absentButton.className = "absent";
+            absentButton.onclick = () =>
+                markAttendance(student.roll, "Absent");
+
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.className = "remove";
+            removeButton.onclick = () => removeStudent(student.roll);
+
+            actions.append(presentButton, absentButton, removeButton);
+            row.appendChild(actions);
+            table.appendChild(row);
+        });
+    }
+
+    dateInput.addEventListener("change", render);
+
+    render();
+</script>
+</body>
+</html>
